@@ -1,5 +1,5 @@
 """Models for Cupcake app."""
-from unittest.mock import DEFAULT
+# from unittest.mock import DEFAULT
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -19,6 +19,17 @@ class Cupcake(db.Model):
     size = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     image = db.Column(db.Text, nullable=False, default=DEFAULT_IMAGE_URL)
+
+    def serialize(self):
+        """Serialize to dictionary."""
+
+        return {
+            "id": self.id,
+            "flavor": self.flavor,
+            "size": self.size,
+            "rating": self.rating,
+            "image": self.image
+        }
 
 
 def connect_db(app):
