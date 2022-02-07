@@ -53,3 +53,19 @@ def create_cupcake():
     serialized = cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
+
+@app.patch('/api/cupcakes/<int:cupcake_id>')
+def update_cupcake(cupcake_id):
+    """"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    cupcake_copy = request.json.copy()
+    print(cupcake_copy)
+    breakpoint()
+    
+    cupcake['flavor'] = cupcake_copy['flavor'] or cupcake['flavor']
+    cupcake['size'] = cupcake_copy['size'] or cupcake['size']
+    cupcake['rating'] = cupcake_copy['rating'] or cupcake['rating']
+    cupcake['image'] = request.json['image'] or cupcake['image']
+
+    db.session.commit()
