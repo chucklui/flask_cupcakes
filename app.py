@@ -1,5 +1,6 @@
 """Flask app for Cupcakes"""
-from models import Cupcake, connect_db, db
+from re import S
+from models import Cupcake, connect_db, db, DEFAULT_IMAGE_URL
 from flask import Flask, redirect, render_template, request, jsonify
 
 app = Flask(__name__)
@@ -19,3 +20,30 @@ def show_cupcakes():
     serialized = [c.serialize() for c in cupcakes]
 
     return jsonify(cupcakes=serialized)
+
+@app.get('/api/cupcakes/<int:cupcake_id>')
+def show_single_cupcake(cupcake_id):
+    """doc"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    serialized = cupcake.serialize()
+
+    return jsonify(cupcake=serialized)
+
+@app.post('/api/cupcakes')
+def create_cupcake():
+    """doc"""
+
+    flavor = request.json['flavor']
+    size = request.json['size']
+    rating = request.json['rating']
+    image = request.json['image']
+    image = image if image != '' else DEFAULT_IMAGE_URL
+
+    cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
+    db.session.add(cupcake)
+    db.session.commit()
+
+    serialized = cupcake.serialize()
+
+    return jsonify(cupcake=serialized)
