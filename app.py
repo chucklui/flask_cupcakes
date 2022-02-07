@@ -1,7 +1,6 @@
 """Flask app for Cupcakes"""
-from re import S
-from models import Cupcake, connect_db, db, DEFAULT_IMAGE_URL
-from flask import Flask, redirect, render_template, request, jsonify
+from models import Cupcake, connect_db, db
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret"
@@ -14,7 +13,10 @@ db.create_all()
 
 @app.get('/api/cupcakes')
 def show_cupcakes():
-    """doc"""
+    # use example in docstrings
+    """this returns dict of cupcakes of JSON
+    {cupcakes: [{id, flavor, size, rating, image}, ...]}
+    """
 
     cupcakes = Cupcake.query.all()
     serialized = [c.serialize() for c in cupcakes]
@@ -23,7 +25,9 @@ def show_cupcakes():
 
 @app.get('/api/cupcakes/<int:cupcake_id>')
 def show_single_cupcake(cupcake_id):
-    """doc"""
+    """this returns JSON about single cupcake like
+    {cupcake: {id, flavor, size, rating, image}}
+    """
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized = cupcake.serialize()
@@ -32,13 +36,15 @@ def show_single_cupcake(cupcake_id):
 
 @app.post('/api/cupcakes')
 def create_cupcake():
-    """doc"""
+    """this create a new cupcake, add to db,
+    and returns JSON describing new cupcake
+    {cupcake: {id, flavor, size, rating, image}}
+    """
 
     flavor = request.json['flavor']
     size = request.json['size']
     rating = request.json['rating']
-    image = request.json['image']
-    image = image if image != '' else DEFAULT_IMAGE_URL
+    image = request.json['image'] or None
 
     cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
     db.session.add(cupcake)
@@ -46,4 +52,4 @@ def create_cupcake():
 
     serialized = cupcake.serialize()
 
-    return jsonify(cupcake=serialized)
+    return (jsonify(cupcake=serialized), 201)
