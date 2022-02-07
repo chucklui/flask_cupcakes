@@ -58,14 +58,14 @@ def create_cupcake():
 def update_cupcake(cupcake_id):
     """"""
 
+    # instance/object, get data by using dot notation
     cupcake = Cupcake.query.get_or_404(cupcake_id)
-    cupcake_copy = request.json.copy()
-    print(cupcake_copy)
-    breakpoint()
     
-    cupcake['flavor'] = cupcake_copy['flavor'] or cupcake['flavor']
-    cupcake['size'] = cupcake_copy['size'] or cupcake['size']
-    cupcake['rating'] = cupcake_copy['rating'] or cupcake['rating']
-    cupcake['image'] = request.json['image'] or cupcake['image']
+    cupcake.flavor = request.json.get('flavor', cupcake.flavor)
+    cupcake.size = request.json.get('size', cupcake.size)
+    cupcake.rating = request.json.get('rating', cupcake.rating)
+    cupcake.image = request.json.get('image', cupcake.image)
 
     db.session.commit()
+    serialized = cupcake.serialize()
+    return jsonify(cupcake=serialized)
