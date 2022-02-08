@@ -1,6 +1,6 @@
 """Flask app for Cupcakes"""
 from models import Cupcake, connect_db, db
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret"
@@ -10,6 +10,12 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 connect_db(app)
 db.create_all()
+
+@app.get('/')
+def homepage():
+    """this display homeapage for cupcakes"""
+
+    return render_template('index.html')
 
 @app.get('/api/cupcakes')
 def show_cupcakes():
@@ -56,7 +62,9 @@ def create_cupcake():
 
 @app.patch('/api/cupcakes/<int:cupcake_id>')
 def update_cupcake(cupcake_id):
-    """"""
+    """this update the cupcake and returns JSON like
+    {cupcake: {id, flavor, size, rating, image}}
+    """
 
     # instance/object, get data by using dot notation
     cupcake = Cupcake.query.get_or_404(cupcake_id)
